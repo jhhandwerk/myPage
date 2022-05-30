@@ -7,6 +7,6 @@ function draw() {
   fill(255);
   noStroke();
 
-  wave = sin(frameCount);
+  wave = sin(radians(frameCount));
   ellipse(width/2 + wave * 300,height/2,100,100);
 }
