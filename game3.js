@@ -1,12 +1,32 @@
-kaboom({
-	global: true,
-	fullscreen: true,
-	scale: 1,
-	debug: true,
-});
+kaboom()
+loadSprite("link", "link.png");
+loadSprite("wall", "steel.png");
 
+// load game
+scene("game", () => {
 
-	loadSprite("link", "link.png")
+	addLevel([
+		"	",
+		"	",
+		"	",
+		"	",
+		"	",
+		"============",
+		"                   ======="
+	],{
+		width: 32,
+		height: 32,
+		// define what each symbol means, by a function returning a component list (what will be passed to add())
+		"=": () => [
+			sprite("wall"),
+			area(),
+			solid(),
+		],
+	}
+	
+	)
+
+    loadSprite("link", "link.png")
 	loadSprite("wall", "steel.png")
 	
 	const SPEED = 120
@@ -14,7 +34,7 @@ kaboom({
 		sprite("link"),
 		pos(80,40),
 		area(),
-		body()
+		body(),
 	])
 	
 	const wall = add([
@@ -69,8 +89,31 @@ kaboom({
 	onKeyPress("space", () => {
 		player.jump()
 	})
+    // score counter
+    let score = 0;
+    const scoreLabel = add([
+    text(score),
+    pos(24, 24)
+    ])
+    onUpdate(() => {
+        score++;
+        scoreLabel.text = score;
+    });
+    // lose condtion
+    player.onCollide("tree", () => {
+        addKaboom(player.pos);
+        shake();
+        go("lose"); // go to "lose" scene here
+    });
+});
 
+go("game")
 
-
-
-	
+// load lose scene
+scene("lose", () => {
+    add([
+        text("Game Over"),
+        pos(center()),
+        origin("center"),
+    ])
+})
