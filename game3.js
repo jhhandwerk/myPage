@@ -1,11 +1,14 @@
-kaboom()
+kaboom({
+	// clearColor: [0,0,0,1]
+})
+gravity(2)
 loadSprite("link", "link.png");
-loadSprite("wall", "steel.png");
+loadSprite("wall", "steel.png", area(), solid());
 
 // load game
 scene("game", () => {
 
-	addLevel([
+	addLevel([level
 		"	",
 		"	",
 		"	",
@@ -19,7 +22,7 @@ scene("game", () => {
 		// define what each symbol means, by a function returning a component list (what will be passed to add())
 		"=": () => [
 			sprite("wall"),
-			area(),
+			area(),	
 			solid(),
 		],
 	}
@@ -27,7 +30,7 @@ scene("game", () => {
 	)
 
     loadSprite("link", "link.png")
-	loadSprite("wall", "steel.png")
+	loadSprite("wall", "steel.png", solid())
 	
 	const SPEED = 120
 	const player = add([
@@ -39,7 +42,9 @@ scene("game", () => {
 	
 	const wall = add([
 		sprite("wall"),
-		pos(200,150)
+		pos(200,150),
+		area(),
+		solid(),
 	])
 	// floor
 	add([
