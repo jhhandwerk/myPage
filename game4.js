@@ -9,6 +9,7 @@ loadSprite("steel", "/sprites/steel.png")
 loadSprite("door", "/sprites/door.png")
 loadSprite("key", "/sprites/key.png")
 loadSprite("bean", "/sprites/bean.png")
+loadSprite("flower", "/sprites/eyeflower.png")
 
 scene("main", (levelIdx) => {
 
@@ -18,11 +19,15 @@ scene("main", (levelIdx) => {
 	const characters = {
 		"a": {
 			sprite: "bag",
-			msg: "ohhi how are you?",
+			msg: "hello",
 		},
 		"b": {
 			sprite: "ghosty",
 			msg: "get out!",
+		},
+        "c": {
+			sprite: "flower",
+			msg: "I am a flower",
 		},
 	}
 
@@ -32,7 +37,7 @@ scene("main", (levelIdx) => {
 			"=====|===",
 			"=       =",
 			"= a     =",
-			"=       =",
+			"=    c   =",
 			"=       =",
 			"=    $  =",
 			"=       =",
@@ -44,11 +49,25 @@ scene("main", (levelIdx) => {
 			"-       -",
 			"-       -",
 			"-  $    -",
-			"|       -",
+			"|    c  -",
 			"-       -",
 			"-     b -",
 			"-   @   -",
 			"---------",
+		],
+        [
+			"=====|===",
+			"=       =",
+			"= a     =",
+			"=       =",
+			"=   c   =",
+			"=    $  =",
+			"=       =",
+			"=   @   =",
+			"=========",
+		],
+        [
+
 		],
 	]
 
@@ -82,6 +101,12 @@ scene("main", (levelIdx) => {
 			area(),
 			solid(),
 			"door",
+		],
+        "c": () => [
+			sprite("flower"),
+			area(),
+			solid(),
+			"flower",
 		],
 		// any() is a special function that gets called everytime there's a
 		// symbole not defined above and is supposed to return what that symbol
@@ -163,6 +188,10 @@ scene("main", (levelIdx) => {
 		} else {
 			dialog.say("you got no key!")
 		}
+	})
+    player.onCollide("flower", () => {
+	    dialog.say("I am a flower")
+		
 	})
 
 	// talk on touch
