@@ -19,7 +19,7 @@ scene("main", (levelIdx) => {
 	const characters = {
 		"a": {
 			sprite: "bag",
-			msg: "hello",
+			msg: "hello!",
 		},
 		"b": {
 			sprite: "ghosty",
