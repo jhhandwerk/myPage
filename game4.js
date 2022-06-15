@@ -66,9 +66,6 @@ scene("main", (levelIdx) => {
 			"=   @   =",
 			"=========",
 		],
-        [
-
-		],
 	]
 
 	addLevel(levels[levelIdx], {
