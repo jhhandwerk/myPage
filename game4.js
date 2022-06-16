@@ -1,13 +1,17 @@
 // simple rpg style walk and talk
 
-kaboom()
+kaboom({
+	background: [ 255, 209, 253 ]
+})
 
 loadSprite("bag", "/sprites/bag.png")
 loadSprite("ghosty", "/sprites/ghosty.png")
 loadSprite("grass", "/sprites/grass.png")
 loadSprite("steel", "/sprites/steel.png")
 loadSprite("door", "/sprites/door.png")
+loadSprite("doorL", "/sprites/doorL.png")
 loadSprite("key", "/sprites/key.png")
+loadSprite("keyL", "/sprites/keyL.png")
 loadSprite("bean", "/sprites/bean.png")
 loadSprite("flower", "/sprites/eyeflower.png")
 loadSound("bgm", "/sounds/bgm.mp3")
@@ -21,21 +25,21 @@ volume(0.5)
 
 scene("main", (levelIdx) => {
 
-	const SPEED = 320
+	const SPEED = 150
 
 	// character dialog data
 	const characters = {
 		"a": {
 			sprite: "bag",
-			msg: "hello!",
+			msg: "If you take the key behind me, you will enter a room where there may be a battle. If you win the battle, you may recieve something of value. Press space to take my key...",
 		},
 		"b": {
 			sprite: "ghosty",
-			msg: "get out!",
+			msg: "get out!!",
 		},
         "c": {
 			sprite: "flower",
-			msg: "I am a flower",
+			// msg: "My key will open the left door. Behind the left door, you will find a magical meadow.",
 		},
 	}
 
@@ -43,12 +47,12 @@ scene("main", (levelIdx) => {
 	const levels = [
 		[
 			"=========",
-			"=       =",
-			"= a     =============",
-			"=   c    	          |",
-			"=       =============",
-			"=       =",
-			"=  $    =",
+			"=       ===",
+			"=  ?   $   =========",
+			"=  a  c    	        |",
+			"=          =========",
+			"l          =",
+			"=        ====",
 			"=   @   =",
 			"=========",
 		],
@@ -64,18 +68,17 @@ scene("main", (levelIdx) => {
 			"---------",
 		],
         [
-			"=====|===",
-			"=       =",
-			"= a     =",
-			"=       =",
-			"=   c   =",
-			"=       =",
-			"=   $   =",
-			"=   @   ==",
-			"=========",
-		],
+			"=====|=======",
+			"=               =",
+			"= a             =",
+			"=               =",
+			"=   c           =",
+			"=               =",
+			"=   $      x     =",
+			"=   @          ==",
+			"=============",
+		]
 	]
-
 	addLevel(levels[levelIdx], {
 		width: 64,
 		height: 64,
@@ -94,6 +97,13 @@ scene("main", (levelIdx) => {
 			sprite("key"),
 			area(),
 			"key",
+			"bomb"
+		],
+		"?": () => [
+			sprite("keyL"),
+			area(),
+			"keyL",
+			"bomb"
 		],
 		"@": () => [
 			sprite("bean"),
@@ -106,12 +116,26 @@ scene("main", (levelIdx) => {
 			area(),
 			solid(),
 			"door",
+		
+		],
+		"l": () => [
+			sprite("doorL"),
+			area(),
+			solid(),
+			"doorL",
+		
 		],
         "c": () => [
 			sprite("flower"),
 			area(),
 			solid(),
 			"flower",
+		],
+		"x": () => [
+			sprite("ghosty"),
+			area(),
+			solid(),
+			"ghosty",
 		],
 		// any() is a special function that gets called everytime there's a
 		// symbole not defined above and is supposed to return what that symbol
@@ -145,6 +169,7 @@ scene("main", (levelIdx) => {
 		const txt = add([
 			text("", {
 				width: width(),
+				size:25
 			}),
 			pos(0 + pad, height() - h + pad),
 			z(100),
@@ -176,13 +201,21 @@ scene("main", (levelIdx) => {
 	}
 
 	let hasKey = false
+	let hasKeyL = false
 	const dialog = addDialog()
 
 	player.onCollide("key", (key) => {
 		destroy(key)
+		// code below is kind of hacky, but it makes options exclusive
+		destroyAll("keyL")
 		hasKey = true
 	})
-
+	player.onCollide("keyL", (keyL) => {
+		destroy(keyL)
+		destroyAll("key")
+		hasKeyL = true
+	})
+	// right door logic!!!!!!!!!!!!!!!!!!!!!!!
 	player.onCollide("door", () => {
 		if (hasKey) {
 			if (levelIdx + 1 < levels.length) {
@@ -191,11 +224,24 @@ scene("main", (levelIdx) => {
 				go("win")
 			}
 		} else {
-			dialog.say("you got no key!")
+			dialog.say("you dont have the right key...")
+		}
+	})
+	// left door logic!!!!!!!!!!!!!!!!!!!
+	player.onCollide("doorL", () => {
+		if (hasKeyL) {
+			if (levelIdx + 1 < levels.length) {
+				// this increments by 2 to skip a level. I wanna add the ai for a battle here...
+				go("main", levelIdx + 2)
+			} else {
+				go("win")
+			}
+		} else {
+			dialog.say("you dont have the right key...")
 		}
 	})
     player.onCollide("flower", () => {
-	    dialog.say("I am a flower")
+	    dialog.say("The key behind me will open the right door. Behind the right door, you will find a magical meadow.")
 		
 	})
 
@@ -219,9 +265,7 @@ scene("main", (levelIdx) => {
 			player.move(dirs[dir].scale(SPEED))
 		})
 	}
-
 })
-
 scene("win", () => {
 	add([
 		text("You Win!"),
@@ -229,5 +273,4 @@ scene("win", () => {
 		origin("center"),
 	])
 })
-
 go("main", 0)
