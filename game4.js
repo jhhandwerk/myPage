@@ -10,6 +10,14 @@ loadSprite("door", "/sprites/door.png")
 loadSprite("key", "/sprites/key.png")
 loadSprite("bean", "/sprites/bean.png")
 loadSprite("flower", "/sprites/eyeflower.png")
+loadSound("bgm", "/sounds/bgm.mp3")
+
+const music = play("bgm", {
+	loop: true,
+})
+
+// Adjust global volume
+volume(0.5)
 
 scene("main", (levelIdx) => {
 
@@ -126,7 +134,7 @@ scene("main", (levelIdx) => {
 	const player = get("player")[0]
 
 	function addDialog() {
-		const h = 160
+		const h = 80
 		const pad = 16
 		const bg = add([
 			pos(0, height() - h),
