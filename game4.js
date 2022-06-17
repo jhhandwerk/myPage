@@ -14,6 +14,8 @@ loadSprite("key", "/sprites/key.png")
 loadSprite("keyL", "/sprites/keyL.png")
 loadSprite("bean", "/sprites/bean.png")
 loadSprite("flower", "/sprites/eyeflower.png")
+loadSprite("enemy", "/sprites/enemy.png")
+
 loadSound("bgm", "/sounds/bgm.mp3")
 
 const music = play("bgm", {
@@ -37,12 +39,17 @@ scene("main", (levelIdx) => {
 			sprite: "ghosty",
 			msg: "get out!!",
 		},
-        "c": {
+		// KIll!!!!!!!!!!!!!!!!
+		"c": {
+			sprite: "enemy",
+			msg: "kill"
+		
+		},
+        "d	": {
 			sprite: "flower",
 			// msg: "My key will open the left door. Behind the left door, you will find a magical meadow.",
 		},
 	}
-
 	// level layouts
 	const levels = [
 		[
@@ -51,7 +58,7 @@ scene("main", (levelIdx) => {
 			"=  ?   $   =========",
 			"=  a  c    	        |",
 			"=          =========",
-			"l          =",
+			"l    k      =",
 			"=        ====",
 			"=   @   =",
 			"=========",
@@ -74,7 +81,7 @@ scene("main", (levelIdx) => {
 			"=               =",
 			"=   c           =",
 			"=               =",
-			"=   $      x     =",
+			"=   $      k     =",
 			"=   @          ==",
 			"=============",
 		]
@@ -116,14 +123,12 @@ scene("main", (levelIdx) => {
 			area(),
 			solid(),
 			"door",
-		
 		],
 		"l": () => [
 			sprite("doorL"),
 			area(),
 			solid(),
 			"doorL",
-		
 		],
         "c": () => [
 			sprite("flower"),
@@ -136,6 +141,14 @@ scene("main", (levelIdx) => {
 			area(),
 			solid(),
 			"ghosty",
+		],
+		"k": () => [
+			sprite("enemy"),
+			area(),
+			solid(),
+			patrol(),
+			"enemy",
+			"danger",
 		],
 		// any() is a special function that gets called everytime there's a
 		// symbole not defined above and is supposed to return what that symbol
@@ -204,6 +217,25 @@ scene("main", (levelIdx) => {
 	let hasKeyL = false
 	const dialog = addDialog()
 
+	// enemy logic
+	player.onCollide("danger", () =>{
+		go("lose")
+	})
+
+	function patrol (){
+		return{
+			id: "patrol",
+			// require: [ "pos", "area", ],	
+			update(){
+			// this is kind of a happy accident because the block moves towards
+			// the door and blocks it accidentally creating the necessity that the 
+			// player must get the key by a certain time... but I want to make  
+			// one that moves back and forth too...
+				this.move(-10,0)
+			}
+		}
+	}
+
 	player.onCollide("key", (key) => {
 		destroy(key)
 		// code below is kind of hacky, but it makes options exclusive
@@ -266,11 +298,19 @@ scene("main", (levelIdx) => {
 		})
 	}
 })
+
 scene("win", () => {
 	add([
 		text("You Win!"),
 		pos(width() / 2, height() / 2),
 		origin("center"),
 	])
+})
+// lose scene
+scene("lose", () => {
+	add([
+		text("You Lose"),
+	])
+	onKeyPress(() => go("game"))
 })
 go("main", 0)
